@@ -16,8 +16,12 @@ import java.util.List;
 @RequestMapping("api/images")
 public class ImagesController {
 
+    private final ImageStore imageStore;
+
     @Autowired
-    private ImageStore imageStore;
+    public ImagesController(ImageStore imageStore) {
+        this.imageStore = imageStore;
+    }
 
     @GetMapping("meta")
     public List<ImageMeta> listImages() {
