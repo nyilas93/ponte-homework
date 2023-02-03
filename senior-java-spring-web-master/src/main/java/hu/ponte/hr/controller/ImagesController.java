@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping("api/images")
 public class ImagesController {
 
