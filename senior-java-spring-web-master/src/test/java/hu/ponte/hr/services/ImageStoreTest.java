@@ -16,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,15 +32,17 @@ class ImageStoreTest {
 
     @Mock
     private ImageRepository imageRepositoryMock;
+    @Mock
+    private SignService signServiceMock;
     private ImageStore imageStore;
 
     @BeforeEach
     void setup() {
-        imageStore = new ImageStore(imageRepositoryMock);
+        imageStore = new ImageStore(imageRepositoryMock, signServiceMock);
     }
 
     @Test
-    void storeFile_testSuccessful() throws IOException {
+    void storeFile_testSuccessful() throws Exception {
 
         MultipartFile testFile = new MockMultipartFile(
                 "testFile",
@@ -46,9 +50,17 @@ class ImageStoreTest {
                 "image/jpeg",
                 "testFileData".getBytes());
 
+        Map<String, Object> signedFileWithSignature = new HashMap<>();
+        signedFileWithSignature.put("fileBytes", testFile.getBytes());
+        signedFileWithSignature.put("sign", "testDigitalSign");
+
+        when(signServiceMock.signFile(any(MultipartFile.class))).thenReturn(signedFileWithSignature);
+
         imageStore.storeFile(testFile);
 
+        verify(signServiceMock, times(1)).signFile(any(MultipartFile.class));
         verify(imageRepositoryMock, times(1)).save(any(ImageEntity.class));
+        verifyNoMoreInteractions(signServiceMock);
         verifyNoMoreInteractions(imageRepositoryMock);
     }
 
