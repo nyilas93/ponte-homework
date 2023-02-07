@@ -9,8 +9,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -18,15 +18,22 @@ import java.util.stream.Collectors;
 public class ImageStore {
 
     private final ImageRepository imageRepository;
+    private final SignService signService;
 
     @Autowired
-    public ImageStore(ImageRepository imageRepository) {
+    public ImageStore(ImageRepository imageRepository, SignService signService) {
         this.imageRepository = imageRepository;
+        this.signService = signService;
     }
 
-    public void storeFile(MultipartFile file) throws IOException {
+    public void storeFile(MultipartFile file) throws Exception {
+        Map<String, Object> signedFileWithSignature = signService.signFile(file);
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        ImageEntity image = new ImageEntity(fileName, file.getContentType(), file.getBytes(), "sign");
+        ImageEntity image = new ImageEntity(
+                fileName,
+                file.getContentType(),
+                (byte[]) signedFileWithSignature.get("fileBytes"),
+                (String) signedFileWithSignature.get("sign"));
         imageRepository.save(image);
     }
 

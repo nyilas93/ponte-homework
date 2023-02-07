@@ -1,6 +1,6 @@
 package hu.ponte.hr.domain;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "image")
-@Data
+@Getter
 @NoArgsConstructor
 public class ImageEntity {
 
@@ -20,6 +20,7 @@ public class ImageEntity {
     private String type;
     @Lob
     private byte[] data;
+    @Column(columnDefinition = "TEXT")
     private String sign;
 
     public ImageEntity(String name, String type, byte[] data, String sign) {

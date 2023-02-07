@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @Slf4j
 @RestController
 @RequestMapping("api/file")
@@ -24,7 +22,7 @@ public class UploadController {
     }
 
     @PostMapping("post")
-    public String handleFormUpload(@RequestParam("file") MultipartFile file) throws IOException {
+    public String handleFormUpload(@RequestParam("file") MultipartFile file) throws Exception {
         log.info("Handle file upload request: {}", file.getOriginalFilename());
         imageStore.storeFile(file);
         log.info("Successful file upload: {}", file.getOriginalFilename());
